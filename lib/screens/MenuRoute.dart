@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'Auth/RegisterScreen.dart';
 
 class MenuRoute extends StatelessWidget {
   const MenuRoute();
@@ -7,10 +10,17 @@ class MenuRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Main Screen"),
+        title: Text("Main Menu"),
       ),
       body: ListView(
-        children: [],
+        children: [
+          ListTile(
+            title: Text("Register Screen"),
+            onTap: () {
+              Get.to(() => RegisterScreen());
+            },
+          ),
+        ],
       ),
     );
   }
