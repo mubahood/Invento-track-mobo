@@ -14,7 +14,7 @@ dependencies:
   fluttertoast: ^8.1.2
   intl: ^0.18.0
   package_info: ^2.0.2
-  http: ^0.13.5
+  dio: ^5.4.0
   flutter_speed_dial: ^6.2.0
   shared_preferences: ^2.0.15
   url_launcher: ^6.1.7
@@ -25,6 +25,7 @@ dependencies:
   cached_network_image: ^3.2.2
   html: ^0.15.0
   webview_flutter: ^3.0.4
+  flutter_easyloading: ^3.0.5
 
 flutter:
   uses-material-design: true
