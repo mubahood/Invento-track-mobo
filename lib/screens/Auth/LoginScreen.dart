@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,19 +8,22 @@ import 'package:get/get.dart';
 import '../../data/img.dart';
 import '../../data/my_theme.dart';
 import '../../model/Utils.dart';
+import 'RegisterScreen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen();
+class LoginScreen extends StatefulWidget {
+  const LoginScreen();
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   LoggedInUser newUser = LoggedInUser();
 
   String company_name = "";
   String currency = "";
+
+  bool forgotPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -57,22 +58,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 100,
                 ),
                 Container(height: 15),
-                TextField(
-                  keyboardType: TextInputType.name,
-                  style: TextStyle(color: Colors.white),
-                  decoration: MyTheme.inputStyle1('First Name'),
-                  onChanged: (value) {
-                    newUser.first_name = value.toString();
-                  },
-                ),
-                Container(height: 5),
-                TextField(
-                  keyboardType: TextInputType.name,
-                  style: TextStyle(color: Colors.white),
-                  decoration: MyTheme.inputStyle1('Last Name'),
-                  onChanged: (value) {
-                    newUser.last_name = value.toString();
-                  },
+                Text(
+                  "Login",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Container(height: 5),
                 TextField(
@@ -85,33 +77,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 Container(height: 5),
                 TextField(
-                  keyboardType: TextInputType.phone,
-                  style: TextStyle(color: Colors.white),
-                  decoration: MyTheme.inputStyle1('Phone number'),
-                  onChanged: (value) {
-                    newUser.phone_number = value.toString();
-                  },
-                ),
-                Container(height: 5),
-                TextField(
-                  keyboardType: TextInputType.name,
-                  style: TextStyle(color: Colors.white),
-                  decoration: MyTheme.inputStyle1('Company Name'),
-                  onChanged: (value) {
-                    company_name = value.toString();
-                  },
-                ),
-                Container(height: 5),
-                TextField(
-                  keyboardType: TextInputType.name,
-                  style: TextStyle(color: Colors.white),
-                  decoration: MyTheme.inputStyle1('Currency'),
-                  onChanged: (value) {
-                    currency = value.toString();
-                  },
-                ),
-                Container(height: 5),
-                TextField(
                   keyboardType: TextInputType.visiblePassword,
                   style: TextStyle(color: Colors.white),
                   decoration: MyTheme.inputStyle1('Password'),
@@ -119,7 +84,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     newUser.password = value.toString();
                   },
                 ),
-                Container(height: 25),
+                //forgot password
+                Container(
+                  alignment: Alignment.centerRight,
+                  width: double.infinity,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                        foregroundColor: Colors.transparent),
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: Colors.red[100]),
+                    ),
+                    onPressed: () {
+                      forgotPassword = !forgotPassword;
+                      setState(() {});
+                    },
+                  ),
+                ),
+
+                forgotPassword
+                    ? Container(
+                        color: Colors.white,
+                        margin: EdgeInsets.only(bottom: 20),
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                            'To reset your password, please contact us on mubahood360@gmail.com'),
+                      )
+                    : SizedBox(),
+
+                Container(height: 0),
                 Container(
                   width: double.infinity,
                   height: 45,
@@ -130,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: new BorderRadius.circular(5)),
                     ),
                     child: Text(
-                      "Create Account",
+                      "Login",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -168,10 +161,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextButton.styleFrom(
                         foregroundColor: Colors.transparent),
                     child: Text(
-                      "Already have account? Login",
+                      "Don't have an account? Register here.",
                       style: TextStyle(color: Colors.red[100]),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.to(() => RegisterScreen());
+                    },
                   ),
                 ),
                 SizedBox(
@@ -184,44 +179,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void validate_form() {
-    if (newUser.first_name.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "First name is required.",
-        backgroundColor: Colors.red[100],
-      );
-      return;
-    }
-    if (newUser.last_name.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Last name is required.",
-        backgroundColor: Colors.red[100],
-      );
-      return;
-    }
     if (newUser.email.isEmpty) {
       Get.snackbar(
         "Error",
         "Email is required.",
-        backgroundColor: Colors.red[100],
-      );
-      return;
-    }
-
-    if (company_name.length < 3) {
-      Get.snackbar(
-        "Error",
-        "Company name is required.",
-        backgroundColor: Colors.red[100],
-      );
-      return;
-    }
-
-    if (currency.length < 1) {
-      Get.snackbar(
-        "Error",
-        "Currency is required.",
         backgroundColor: Colors.red[100],
       );
       return;
@@ -249,14 +210,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
     var resp = null;
 
-    Map<String, dynamic> uploadData = newUser.toJson();
-    uploadData['company_name'] = company_name;
-    uploadData['currency'] = currency;
-
     try {
       resp = await dio.post(
-        '${Utils.API_URL}auth/register',
-        data: json.encode(uploadData),
+        '${Utils.API_URL}auth/login',
+        data: {
+          "email": newUser.email,
+          "password": newUser.password,
+        },
         options: Options(headers: {
           "Accept": "application/json",
           "Content-Type": "application/json"
@@ -267,7 +227,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       resp = null;
     }
 
-    print("=====REGISTERING END=====");
+    print("=====REQUEST END=====");
     Utils.hideLoader();
     if (resp == null) {
       Get.snackbar("Error", error, backgroundColor: Colors.red[100]);
@@ -275,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     if (resp.data == null) {
-      error = "Failed to register because ${resp.statusMessage}.";
+      error = "Failed to login user because ${resp.statusMessage}.";
       Get.snackbar("Error", "Failed to register",
           backgroundColor: Colors.red[100]);
       return;
@@ -295,6 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {});
       return;
     }
+
     user = LoggedInUser.fromJson(resp.data['data']['user']);
     if (user.id == 0) {
       error = 'Failed to parse user data. Try to login with your credentials.';

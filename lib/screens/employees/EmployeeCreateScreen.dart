@@ -1,32 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_ui/data/my_colors.dart';
+import 'package:flutter_ui/model/EmployeeModel.dart';
 import 'package:flutter_ui/model/ResponseModel.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 
-import '../../model/FinancialPeriodModel.dart';
 import '../../model/Utils.dart';
 
-class FinancialPeriodCreateScreen extends StatefulWidget {
-  FinancialPeriodModel item;
+class EmployeeCreateScreen extends StatefulWidget {
+  EmployeeModel item;
 
-  FinancialPeriodCreateScreen(this.item);
+  EmployeeCreateScreen(this.item);
 
   @override
-  State<FinancialPeriodCreateScreen> createState() =>
-      _FinancialPeriodCreateScreenState();
+  State<EmployeeCreateScreen> createState() => _EmployeeCreateScreenState();
 }
 
-class _FinancialPeriodCreateScreenState
-    extends State<FinancialPeriodCreateScreen> {
+class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create Financial Period"),
+        title: Text("Create new employee"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -41,13 +39,14 @@ class _FinancialPeriodCreateScreenState
                   height: 15,
                 ),
                 FormBuilderTextField(
-                  name: 'name',
-                  initialValue: widget.item.name,
+                  name: 'first_name',
+                  initialValue: widget.item.first_name,
                   onChanged: (String? val) {
-                    widget.item.name = val!;
+                    widget.item.first_name = val!;
                   },
+                  textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    labelText: 'Name',
+                    labelText: 'First Name',
                     border: OutlineInputBorder(),
                   ),
                   validator: FormBuilderValidators.compose([
@@ -57,31 +56,169 @@ class _FinancialPeriodCreateScreenState
                   ]),
                 ),
                 SizedBox(
-                  height: 25,
+                  height: 15,
                 ),
-                FormBuilderDateRangePicker(
-                  name: 'start_date',
-                  initialValue: DateTimeRange(
-                    start: Utils.toDate(widget.item.start_date),
-                    end: Utils.toDate(widget.item.end_date),
-                  ),
-                  firstDate: DateTime.now().subtract(Duration(days: (2 * 365))),
-                  lastDate: DateTime.now().add(Duration(days: (2 * 365))),
-                  onChanged: (val) {
-                    if (val == null) {
-                      return;
-                    }
-                    widget.item.start_date = val.start.toString();
-                    widget.item.end_date = val.end.toString();
+
+                FormBuilderTextField(
+                  name: 'last_name',
+                  initialValue: widget.item.last_name,
+                  onChanged: (String? val) {
+                    widget.item.last_name = val!;
                   },
+                  textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    labelText: 'Financial Period Date Range',
+                    labelText: 'Last Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.minLength(3),
+                    FormBuilderValidators.maxLength(100),
+                  ]),
+                ),
+
+                SizedBox(
+                  height: 15,
+                ),
+                //radio picker for status
+                FormBuilderRadioGroup(
+                  name: 'sex',
+                  initialValue: widget.item.sex,
+                  onChanged: (String? val) {
+                    widget.item.sex = val!;
+                  },
+                  options: [
+                    FormBuilderFieldOption(
+                      value: 'Male',
+                    ),
+                    FormBuilderFieldOption(
+                      value: 'Female',
+                    ),
+                    FormBuilderFieldOption(
+                      value: 'Other',
+                    ),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: 'Gender',
                     border: OutlineInputBorder(),
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                   ]),
                 ),
+
+                SizedBox(
+                  height: 15,
+                ),
+
+                FormBuilderTextField(
+                  name: 'phone_number',
+                  initialValue: widget.item.phone_number,
+                  onChanged: (String? val) {
+                    widget.item.phone_number = val!;
+                  },
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                SizedBox(
+                  height: 15,
+                ),
+
+                FormBuilderTextField(
+                  name: 'phone_number_2',
+                  initialValue: widget.item.phone_number_2,
+                  onChanged: (String? val) {
+                    widget.item.phone_number_2 = val!;
+                  },
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number 2',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.minLength(7),
+                    FormBuilderValidators.maxLength(15),
+                  ]),
+                ),
+
+                SizedBox(
+                  height: 15,
+                ),
+
+                FormBuilderTextField(
+                  name: 'address',
+                  initialValue: widget.item.address,
+                  onChanged: (String? val) {
+                    widget.item.address = val!;
+                  },
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                SizedBox(
+                  height: 15,
+                ),
+
+                //dob
+                FormBuilderDateTimePicker(
+                  name: 'dob',
+                  initialValue: widget.item.dob.isNotEmpty
+                      ? DateTime.parse(widget.item.dob)
+                      : null,
+                  onChanged: (DateTime? val) {
+                    widget.item.dob = val.toString();
+                  },
+                  inputType: InputType.date,
+                  decoration: InputDecoration(
+                    labelText: 'Date of Birth',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                //field for description
+                SizedBox(
+                  height: 15,
+                ),
+
+                FormBuilderTextField(
+                  name: 'email',
+                  initialValue: widget.item.email,
+                  onChanged: (String? val) {
+                    widget.item.email = val!;
+                    widget.item.username = widget.item.email;
+                  },
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Email Address',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.email(),
+                    FormBuilderValidators.minLength(3),
+                    FormBuilderValidators.maxLength(45),
+                  ]),
+                ),
+
+                SizedBox(
+                  height: 25,
+                ),
+
+                Text(
+                  "Default password is 4321",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
+                ),
+
                 SizedBox(
                   height: 25,
                 ),
@@ -95,11 +232,9 @@ class _FinancialPeriodCreateScreenState
                   options: [
                     FormBuilderFieldOption(
                       value: 'Active',
-                      child: Text('Active'),
                     ),
                     FormBuilderFieldOption(
                       value: 'Inactive',
-                      child: Text('Inactive'),
                     ),
                   ],
                   decoration: InputDecoration(
@@ -108,27 +243,6 @@ class _FinancialPeriodCreateScreenState
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
-                  ]),
-                ),
-                //field for description
-                SizedBox(
-                  height: 25,
-                ),
-                FormBuilderTextField(
-                  name: 'description',
-                  initialValue: widget.item.description,
-                  onChanged: (String? val) {
-                    widget.item.description = val!;
-                  },
-                  maxLines: 4,
-                  minLines: 3,
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.minLength(3),
-                    FormBuilderValidators.maxLength(100),
                   ]),
                 ),
 
@@ -159,26 +273,10 @@ class _FinancialPeriodCreateScreenState
                 //submit button
                 ElevatedButton(
                     onPressed: () {
-                      ResponseModel resp = ResponseModel(({
-                        'code': 1,
-                        'message': 'Unauthonticatased.',
-                        'data': {'name': 'John Doe', 'age': '30'}
-                      }));
-
                       if (!_formKey.currentState!.validate()) {
                         return;
                       }
-                      Get.defaultDialog(
-                        title: "Alert",
-                        middleText: "Do you want to submit?",
-                        onConfirm: () {
-                          Get.back();
-                          doSubmit();
-                        },
-                        onCancel: () {},
-                        textConfirm: 'Yes',
-                        textCancel: 'Cancel',
-                      );
+                      doSubmit();
                     },
                     child: Text(
                       'Submit',
@@ -196,6 +294,10 @@ class _FinancialPeriodCreateScreenState
                         vertical: 15,
                       ),
                     )),
+                //field for description
+                SizedBox(
+                  height: 15,
+                ),
               ],
             ),
           ),
@@ -207,43 +309,21 @@ class _FinancialPeriodCreateScreenState
   String error = '';
 
   void doSubmit() async {
-    //validate dates
-    if (widget.item.start_date.isEmpty || widget.item.end_date.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Please select a valid date range",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
     Utils.showLoader(false);
     setState(() {
       error = '';
     });
 
-    if (widget.item.total_expenses.isEmpty) {
-      widget.item.total_expenses = "0";
-    }
-    //total_profit
-    if (widget.item.total_profit.isEmpty) {
-      widget.item.total_profit = "0";
-    }
-    //total_sales
-    if (widget.item.total_sales.isEmpty) {
-      widget.item.total_sales = "0";
-    }
-    //total_investment
-    if (widget.item.total_investment.isEmpty) {
-      widget.item.total_investment = "0";
-    }
-
     ResponseModel resp = ResponseModel(
-        await Utils.http_post('api/FinancialPeriod', widget.item.toJson()));
-    Utils.hideLoader();
+      await Utils.http_post(
+        'api/${EmployeeModel.end_point}',
+        widget.item.toJson(),
+      ),
+    );
 
+    await EmployeeModel.get_online_items();
+
+    Utils.hideLoader();
     if (resp.code != 1) {
       setState(() {
         error = resp.message;
@@ -258,14 +338,14 @@ class _FinancialPeriodCreateScreenState
       );
       return;
     }
-
     //success
     Get.snackbar(
       "Success",
-      "Financial Period created successfully.",
+      resp.message,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
+    Navigator.pop(context);
   }
 }

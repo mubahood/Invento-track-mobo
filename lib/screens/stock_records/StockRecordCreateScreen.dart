@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -7,24 +5,25 @@ import 'package:flutter_ui/data/my_colors.dart';
 import 'package:flutter_ui/model/LoggedInUser.dart';
 import 'package:flutter_ui/model/ResponseModel.dart';
 import 'package:flutter_ui/model/StockItemModel.dart';
-import 'package:flutter_ui/model/StockSubCategoryModel.dart';
+import 'package:flutter_ui/screens/stock_items/StockItemsScreen.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../model/StockRecord.dart';
 import '../../model/Utils.dart';
-import '../stock_categories/StockSubCategoriesScreen.dart';
 
-class StockItemCreateScreen extends StatefulWidget {
-  StockItemModel item;
+class StockRecordCreateScreen extends StatefulWidget {
+  StockRecordModel item;
 
-  StockItemCreateScreen(this.item);
+  StockRecordCreateScreen(this.item);
 
   @override
-  State<StockItemCreateScreen> createState() => _StockItemCreateScreenState();
+  State<StockRecordCreateScreen> createState() =>
+      _StockRecordCreateScreenState();
 }
 
-class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
+class _StockRecordCreateScreenState extends State<StockRecordCreateScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   bool isEdit = false;
@@ -53,7 +52,7 @@ class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${isEdit ? 'Updating' : 'Creating new'} stock item"),
+        title: Text("${isEdit ? 'Updating' : 'Creating new'} stock record"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -68,53 +67,29 @@ class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
                   height: 15,
                 ),
                 FormBuilderTextField(
-                  name: 'stock_sub_category_text',
-                  initialValue: widget.item.stock_sub_category_text,
+                  name: 'stock_item_text',
+                  initialValue: widget.item.stock_item_text,
                   readOnly: true,
                   onTap: () async {
-                    StockSubCategoryModel? selected =
-                        await Get.to(() => StockSubCategoriesScreen({
+                    StockItemModel? selected =
+                        await Get.to(() => StockItemsScreen({
                               'isPicker': true,
                             }));
                     if (selected != null) {
-                      widget.item.stock_sub_category_id =
-                          selected.id.toString();
-                      widget.item.stock_sub_category_text = selected.name;
-                      _formKey.currentState!.fields['stock_sub_category_text']!
+                      widget.item.stock_item_id = selected.id.toString();
+                      widget.item.stock_item_text = selected.name;
+                      _formKey.currentState!.fields['stock_item_text']!
                           .didChange(selected.name);
                       setState(() {});
                     }
                   },
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    labelText: 'Select Stock Sub Category',
+                    labelText: 'Select Stock Item',
                     border: OutlineInputBorder(),
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
-                  ]),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-                FormBuilderTextField(
-                  name: 'name',
-                  initialValue: widget.item.name,
-                  onChanged: (String? val) {
-                    widget.item.name = val!;
-                  },
-                  enableSuggestions: true,
-                  keyboardType: TextInputType.text,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Stock item name',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                    FormBuilderValidators.minLength(3),
-                    FormBuilderValidators.maxLength(100),
                   ]),
                 ),
 
@@ -123,22 +98,31 @@ class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
                 ),
                 //radio picker for status
                 FormBuilderRadioGroup(
-                  name: 'generate_sku',
-                  initialValue: widget.item.generate_sku,
+                  name: 'type',
+                  initialValue: widget.item.type,
                   onChanged: (String? val) {
-                    widget.item.generate_sku = val!;
+                    widget.item.type = val!;
                     setState(() {});
                   },
                   options: [
                     FormBuilderFieldOption(
-                      value: 'Manual',
+                      value: 'Sale',
                     ),
                     FormBuilderFieldOption(
-                      value: 'Auto',
+                      value: 'Damage',
+                    ),
+                    FormBuilderFieldOption(
+                      value: 'Expired',
+                    ),
+                    FormBuilderFieldOption(
+                      value: 'Internal Use',
+                    ),
+                    FormBuilderFieldOption(
+                      value: 'Other',
                     ),
                   ],
                   decoration: InputDecoration(
-                    labelText: 'Generate SKU (Batch Number)',
+                    labelText: 'Stock record type',
                     border: OutlineInputBorder(),
                   ),
                   validator: FormBuilderValidators.compose([
@@ -146,101 +130,24 @@ class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
                   ]),
                 ),
 
-                (widget.item.generate_sku != 'Manual')
-                    ? SizedBox()
-                    : Column(
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          FormBuilderTextField(
-                            name: 'sku',
-                            initialValue: widget.item.sku,
-                            onChanged: (String? val) {
-                              widget.item.sku = val!;
-                            },
-                            enableSuggestions: true,
-                            keyboardType: TextInputType.text,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              labelText: 'ENTER SKU (Batch Number)',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: FormBuilderValidators.compose([
-                              FormBuilderValidators.required(),
-                              FormBuilderValidators.minLength(3),
-                              FormBuilderValidators.maxLength(400),
-                            ]),
-                          ),
-                        ],
-                      ),
-
                 SizedBox(
                   height: 15,
                 ),
-
                 FormBuilderTextField(
-                  name: 'buying_price',
-                  initialValue: widget.item.buying_price,
+                  name: 'quantity',
+                  initialValue: widget.item.quantity,
                   onChanged: (String? val) {
-                    widget.item.buying_price = val!;
+                    widget.item.quantity = val!;
                   },
                   enableSuggestions: true,
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    labelText: 'Buying price',
+                    labelText: 'Quantity',
                     border: OutlineInputBorder(),
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
-                    FormBuilderValidators.numeric()
-                  ]),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-
-                FormBuilderTextField(
-                  name: 'selling_price',
-                  initialValue: widget.item.selling_price,
-                  onChanged: (String? val) {
-                    widget.item.selling_price = val!;
-                  },
-                  enableSuggestions: true,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Selling price',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                    FormBuilderValidators.numeric()
-                  ]),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-
-                FormBuilderTextField(
-                  name: 'original_quantity',
-                  initialValue: widget.item.original_quantity,
-                  onChanged: (String? val) {
-                    widget.item.original_quantity = val!;
-                  },
-                  enableSuggestions: true,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Original quantity',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                    FormBuilderValidators.numeric()
                   ]),
                 ),
 
@@ -261,116 +168,6 @@ class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
                     labelText: 'Stock category description',
                     border: OutlineInputBorder(),
                   ),
-                ),
-
-                //error
-                error.isNotEmpty
-                    ? Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.white,
-                        ),
-                        child: Text(
-                          error,
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      )
-                    : Container(),
-
-                SizedBox(
-                  height: 25,
-                ),
-
-                //image picker
-                Column(
-                  children: [
-                    Text(
-                      'Category Photo',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    image_path.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.file(
-                              File(image_path),
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: 200,
-                            ),
-                          )
-                        : (isEdit && widget.item.image.isNotEmpty)
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.network(
-                                  Utils.getImageUrl(widget.item.image),
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: 200,
-                                ))
-                            : Container(
-                                width: double.infinity,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Center(
-                                  child: Text('No image selected'),
-                                ),
-                              ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //remove image button
-                        image_path.isNotEmpty
-                            ? ElevatedButton(
-                                onPressed: () {
-                                  image_path = "";
-                                  setState(() {});
-                                },
-                                child: Text('Remove image',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                    )),
-                              )
-                            : Container(),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            show_image_picker_bottom_sheet(context);
-                          },
-                          child: Text(
-                            image_path.isNotEmpty
-                                ? 'Change image'
-                                : 'Select image',
-                            style: TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
 
                 SizedBox(
@@ -435,12 +232,12 @@ class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
 
     ResponseModel resp = ResponseModel(
       await Utils.http_post(
-        'api/${StockItemModel.end_point}',
+        'api/${StockRecordModel.end_point}',
         formDataMap,
       ),
     );
 
-    await StockItemModel.get_online_items();
+    await StockRecordModel.get_online_items();
 
     Utils.hideLoader();
     if (resp.code != 1) {
@@ -465,7 +262,38 @@ class _StockItemCreateScreenState extends State<StockItemCreateScreen> {
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
-    Navigator.pop(context);
+    _formKey.currentState!.reset();
+    _formKey.currentState!.patchValue({
+      'stock_item_text': '',
+      'type': '',
+      'quantity': '',
+      'description': '',
+    });
+
+    Get.defaultDialog(
+      title: "Success",
+      middleText:
+          "Record created successfully. Do you want to create another record?",
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Get.back();
+            Get.back();
+          },
+          child: Text("No"),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            widget.item = StockRecordModel();
+            _formKey.currentState!.reset();
+            setState(() {});
+            Get.back();
+            Get.back();
+          },
+          child: Text("Yes"),
+        ),
+      ],
+    );
   }
 
   String image_path = "";

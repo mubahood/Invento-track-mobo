@@ -1,29 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui/model/StockCategoryModel.dart';
+import 'package:flutter_ui/model/StockSubCategoryModel.dart';
 import 'package:get/get.dart';
 
 import '../../model/Utils.dart';
 import '../../widget/widgets.dart';
-import 'StockCategoryCreateScreen.dart';
+import 'StockSubCategoryCreateScreen.dart';
+import 'StockSubCategoryDetailsScreen.dart';
 
-class StockCategoriesScreen extends StatefulWidget {
-  const StockCategoriesScreen();
+class StockSubCategoriesScreen extends StatefulWidget {
+  Map<String, dynamic> params = {};
+
+  StockSubCategoriesScreen(this.params);
 
   @override
-  State<StockCategoriesScreen> createState() => _StockCategoriesScreenState();
+  State<StockSubCategoriesScreen> createState() =>
+      _StockSubCategoriesScreenState();
 }
 
-class _StockCategoriesScreenState extends State<StockCategoriesScreen> {
-  List<StockCategoryModel> items = [];
+class _StockSubCategoriesScreenState extends State<StockSubCategoriesScreen> {
+  List<StockSubCategoryModel> items = [];
+  bool isPicker = false;
+  bool searchMode = false;
 
   @override
   void initState() {
     super.initState();
+
+    if (widget.params.isNotEmpty) {
+      if (widget.params.containsKey('isPicker')) {
+        if (widget.params['isPicker'] == true) {
+          isPicker = true;
+        }
+      }
+    }
+
     myInit();
   }
 
+  String searchKeyword = "";
+
   myInit() async {
-    items = await StockCategoryModel.get_items();
+    if (searchKeyword.isNotEmpty) {
+      items = await StockSubCategoryModel.get_items(
+          where: "name LIKE '%$searchKeyword%'");
+    } else {
+      items = await StockSubCategoryModel.get_items(where: "1");
+    }
     setState(() {});
   }
 
@@ -31,11 +53,41 @@ class _StockCategoriesScreenState extends State<StockCategoriesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Stock Categories"),
+          title: searchMode
+              ? TextField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: "Search...",
+                    hintStyle: TextStyle(color: Colors.grey.shade700),
+                    border: InputBorder.none,
+                  ),
+                  style: TextStyle(color: Colors.black),
+                  onChanged: (value) {
+                    searchKeyword = value.toString();
+                    myInit();
+                    setState(() {});
+                  },
+                )
+              : Text("Stock sub Categories"),
+          actions: [
+            IconButton(
+              icon: Icon(
+                searchMode ? Icons.close : Icons.search,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                setState(() {
+                  searchMode = !searchMode;
+                });
+              },
+            ),
+            SizedBox(width: 10),
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Get.to(() => StockCategoryCreateScreen(StockCategoryModel()));
+            await Get.to(
+                () => StockSubCategoryCreateScreen(StockSubCategoryModel()));
             myInit();
           },
           child: const Icon(Icons.add),
@@ -62,16 +114,32 @@ class _StockCategoriesScreenState extends State<StockCategoriesScreen> {
                         ),
                       ),
                       title: Text(items[index].name),
-                      onTap: () {},
-                      subtitle: Text(
-                        items[index].description,
-                        maxLines: 1,
+                      onTap: () {
+                        if (isPicker) {
+                          Get.back(result: items[index]);
+                          return;
+                        }
+
+                        Get.to(
+                            () => StockSubCategoryDetailsScreen(items[index]));
+                      },
+                      subtitle: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                        color: Utils.int_parse(items[index].earned_profit) > 0
+                            ? Colors.green
+                            : Colors.red,
+                        child: Text(
+                          "Profits/Loss: UGX ${Utils.moneyFormat(items[index].earned_profit)}",
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () async {
                           await Get.to(
-                              () => StockCategoryCreateScreen(items[index]));
+                              () => StockSubCategoryCreateScreen(items[index]));
                           myInit();
                         },
                       ),

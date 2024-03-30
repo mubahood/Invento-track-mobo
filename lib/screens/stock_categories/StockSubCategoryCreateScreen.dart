@@ -5,24 +5,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_ui/data/my_colors.dart';
 import 'package:flutter_ui/model/ResponseModel.dart';
-import 'package:flutter_ui/model/StockCategoryModel.dart';
+import 'package:flutter_ui/model/StockSubCategoryModel.dart';
+import 'package:flutter_ui/screens/stock_categories/StockCategoriesScreen.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../model/StockCategoryModel.dart';
 import '../../model/Utils.dart';
 
-class StockCategoryCreateScreen extends StatefulWidget {
-  StockCategoryModel item;
+class StockSubCategoryCreateScreen extends StatefulWidget {
+  StockSubCategoryModel item;
 
-  StockCategoryCreateScreen(this.item);
+  StockSubCategoryCreateScreen(this.item);
 
   @override
-  State<StockCategoryCreateScreen> createState() =>
-      _StockCategoryCreateScreenState();
+  State<StockSubCategoryCreateScreen> createState() =>
+      _StockSubCategoryCreateScreenState();
 }
 
-class _StockCategoryCreateScreenState extends State<StockCategoryCreateScreen> {
+class _StockSubCategoryCreateScreenState
+    extends State<StockSubCategoryCreateScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   bool isEdit = false;
@@ -42,7 +45,8 @@ class _StockCategoryCreateScreenState extends State<StockCategoryCreateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${isEdit ? 'Updating' : 'Creating new'} stock category"),
+        title:
+            Text("${isEdit ? 'Updating' : 'Creating new'} stock sub category"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -57,20 +61,92 @@ class _StockCategoryCreateScreenState extends State<StockCategoryCreateScreen> {
                   height: 15,
                 ),
                 FormBuilderTextField(
-                  name: 'first_name',
+                  name: 'stock_category_text',
+                  initialValue: widget.item.stock_category_text,
+                  readOnly: true,
+                  onTap: () async {
+                    StockCategoryModel? selected =
+                        await Get.to(() => StockCategoriesScreen({
+                              'isPicker': true,
+                            }));
+                    if (selected != null) {
+                      widget.item.stock_category_id = selected.id.toString();
+                      widget.item.stock_category_text = selected.name;
+                      _formKey.currentState!.fields['stock_category_text']!
+                          .didChange(selected.name);
+                      setState(() {});
+                    }
+                  },
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Select Stock Parent Category',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
+                ),
+
+                SizedBox(
+                  height: 15,
+                ),
+                FormBuilderTextField(
+                  name: 'name',
                   initialValue: widget.item.name,
                   onChanged: (String? val) {
                     widget.item.name = val!;
                   },
+                  enableSuggestions: true,
+                  keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    labelText: 'Stock category name',
+                    labelText: 'Stock sub category name',
                     border: OutlineInputBorder(),
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.minLength(3),
                     FormBuilderValidators.maxLength(100),
+                  ]),
+                ),
+
+                SizedBox(
+                  height: 15,
+                ),
+                FormBuilderTextField(
+                  name: 'measurement_unit',
+                  initialValue: widget.item.measurement_unit,
+                  onChanged: (String? val) {
+                    widget.item.measurement_unit = val!;
+                  },
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Measurement unit',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
+                ),
+
+                SizedBox(
+                  height: 15,
+                ),
+                FormBuilderTextField(
+                  name: 'reorder_level',
+                  initialValue: widget.item.reorder_level,
+                  onChanged: (String? val) {
+                    widget.item.reorder_level = val!;
+                  },
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Reorder level',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.min(0),
                   ]),
                 ),
 
@@ -287,12 +363,12 @@ class _StockCategoryCreateScreenState extends State<StockCategoryCreateScreen> {
 
     ResponseModel resp = ResponseModel(
       await Utils.http_post(
-        'api/${StockCategoryModel.end_point}',
+        'api/${StockSubCategoryModel.end_point}',
         formDataMap,
       ),
     );
 
-    await StockCategoryModel.get_online_items();
+    await StockSubCategoryModel.get_online_items();
 
     Utils.hideLoader();
     if (resp.code != 1) {

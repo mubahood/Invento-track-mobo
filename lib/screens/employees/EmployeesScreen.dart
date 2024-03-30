@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ui/model/EmployeeModel.dart';
+import 'package:flutter_ui/screens/employees/EmployeeCreateScreen.dart';
 import 'package:get/get.dart';
 
-import '../../model/FinancialPeriodModel.dart';
 import '../../widget/widgets.dart';
-import 'FinancialPeriodCreateScreen.dart';
 
-class FinancialPeriodsScreen extends StatefulWidget {
-  const FinancialPeriodsScreen();
+class EmployeesScreen extends StatefulWidget {
+  const EmployeesScreen();
 
   @override
-  State<FinancialPeriodsScreen> createState() => _FinancialPeriodsScreenState();
+  State<EmployeesScreen> createState() => _EmployeesScreenState();
 }
 
-class _FinancialPeriodsScreenState extends State<FinancialPeriodsScreen> {
-  List<FinancialPeriodModel> items = [];
+class _EmployeesScreenState extends State<EmployeesScreen> {
+  List<EmployeeModel> items = [];
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _FinancialPeriodsScreenState extends State<FinancialPeriodsScreen> {
   }
 
   myInit() async {
-    items = await FinancialPeriodModel.get_items();
+    items = await EmployeeModel.get_items();
     setState(() {});
   }
 
@@ -30,11 +30,12 @@ class _FinancialPeriodsScreenState extends State<FinancialPeriodsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Financial Periods"),
+          title: Text("Employees"),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Get.to(() => FinancialPeriodCreateScreen(FinancialPeriodModel()));
+          onPressed: () async {
+            await Get.to(() => EmployeeCreateScreen(EmployeeModel()));
+            myInit();
           },
           child: const Icon(Icons.add),
         ),
@@ -54,9 +55,10 @@ class _FinancialPeriodsScreenState extends State<FinancialPeriodsScreen> {
                       onTap: () {},
                       trailing: IconButton(
                         icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          Get.to(
-                              () => FinancialPeriodCreateScreen(items[index]));
+                        onPressed: () async {
+                          await Get.to(
+                              () => EmployeeCreateScreen(items[index]));
+                          myInit();
                         },
                       ),
                     );

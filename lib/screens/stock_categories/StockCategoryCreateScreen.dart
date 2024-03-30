@@ -1,30 +1,48 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_ui/data/my_colors.dart';
-import 'package:flutter_ui/model/EmployeeModel.dart';
 import 'package:flutter_ui/model/ResponseModel.dart';
+import 'package:flutter_ui/model/StockCategoryModel.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../model/Utils.dart';
 
-class EmployeeCreateScreen extends StatefulWidget {
-  EmployeeModel item;
+class StockCategoryCreateScreen extends StatefulWidget {
+  StockCategoryModel item;
 
-  EmployeeCreateScreen(this.item);
+  StockCategoryCreateScreen(this.item);
 
   @override
-  State<EmployeeCreateScreen> createState() => _EmployeeCreateScreenState();
+  State<StockCategoryCreateScreen> createState() =>
+      _StockCategoryCreateScreenState();
 }
 
-class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
+class _StockCategoryCreateScreenState extends State<StockCategoryCreateScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
+
+  bool isEdit = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.item.id != 0) {
+      isEdit = true;
+    } else {
+      isEdit = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create new employee"),
+        title: Text("${isEdit ? 'Updating' : 'Creating new'} stock category"),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -40,13 +58,13 @@ class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
                 ),
                 FormBuilderTextField(
                   name: 'first_name',
-                  initialValue: widget.item.first_name,
+                  initialValue: widget.item.name,
                   onChanged: (String? val) {
-                    widget.item.first_name = val!;
+                    widget.item.name = val!;
                   },
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    labelText: 'First Name',
+                    labelText: 'Stock category name',
                     border: OutlineInputBorder(),
                   ),
                   validator: FormBuilderValidators.compose([
@@ -54,169 +72,6 @@ class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
                     FormBuilderValidators.minLength(3),
                     FormBuilderValidators.maxLength(100),
                   ]),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-
-                FormBuilderTextField(
-                  name: 'last_name',
-                  initialValue: widget.item.last_name,
-                  onChanged: (String? val) {
-                    widget.item.last_name = val!;
-                  },
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                    FormBuilderValidators.minLength(3),
-                    FormBuilderValidators.maxLength(100),
-                  ]),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-                //radio picker for status
-                FormBuilderRadioGroup(
-                  name: 'sex',
-                  initialValue: widget.item.sex,
-                  onChanged: (String? val) {
-                    widget.item.sex = val!;
-                  },
-                  options: [
-                    FormBuilderFieldOption(
-                      value: 'Male',
-                    ),
-                    FormBuilderFieldOption(
-                      value: 'Female',
-                    ),
-                    FormBuilderFieldOption(
-                      value: 'Other',
-                    ),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: 'Gender',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
-                  ]),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-
-                FormBuilderTextField(
-                  name: 'phone_number',
-                  initialValue: widget.item.phone_number,
-                  onChanged: (String? val) {
-                    widget.item.phone_number = val!;
-                  },
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-
-                FormBuilderTextField(
-                  name: 'phone_number_2',
-                  initialValue: widget.item.phone_number_2,
-                  onChanged: (String? val) {
-                    widget.item.phone_number_2 = val!;
-                  },
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number 2',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.minLength(7),
-                    FormBuilderValidators.maxLength(15),
-                  ]),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-
-                FormBuilderTextField(
-                  name: 'address',
-                  initialValue: widget.item.address,
-                  onChanged: (String? val) {
-                    widget.item.address = val!;
-                  },
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Address',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-
-                SizedBox(
-                  height: 15,
-                ),
-
-                //dob
-                FormBuilderDateTimePicker(
-                  name: 'dob',
-                  initialValue: widget.item.dob.isNotEmpty
-                      ? DateTime.parse(widget.item.dob)
-                      : null,
-                  onChanged: (DateTime? val) {
-                    widget.item.dob = val.toString();
-                  },
-                  inputType: InputType.date,
-                  decoration: InputDecoration(
-                    labelText: 'Date of Birth',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-
-                //field for description
-                SizedBox(
-                  height: 15,
-                ),
-
-                FormBuilderTextField(
-                  name: 'email',
-                  initialValue: widget.item.email,
-                  onChanged: (String? val) {
-                    widget.item.email = val!;
-                    widget.item.username = widget.item.email;
-                  },
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.email(),
-                    FormBuilderValidators.minLength(3),
-                    FormBuilderValidators.maxLength(45),
-                  ]),
-                ),
-
-                SizedBox(
-                  height: 25,
-                ),
-
-                Text(
-                  "Default password is 4321",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
                 ),
 
                 SizedBox(
@@ -246,6 +101,24 @@ class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
                   ]),
                 ),
 
+                SizedBox(
+                  height: 15,
+                ),
+                FormBuilderTextField(
+                  name: 'description',
+                  initialValue: widget.item.description,
+                  onChanged: (String? val) {
+                    widget.item.description = val!;
+                  },
+                  minLines: 3,
+                  maxLines: 5,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: 'Stock category description',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
                 //error
                 error.isNotEmpty
                     ? Container(
@@ -266,6 +139,95 @@ class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
                         ),
                       )
                     : Container(),
+
+                SizedBox(
+                  height: 25,
+                ),
+
+                //image picker
+                Column(
+                  children: [
+                    Text(
+                      'Category Photo',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    image_path.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.file(
+                              File(image_path),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 200,
+                            ),
+                          )
+                        : (isEdit && widget.item.image.isNotEmpty)
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.network(
+                                  Utils.getImageUrl(widget.item.image),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 200,
+                                ))
+                            : Container(
+                                width: double.infinity,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Center(
+                                  child: Text('No image selected'),
+                                ),
+                              ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //remove image button
+                        image_path.isNotEmpty
+                            ? ElevatedButton(
+                                onPressed: () {
+                                  image_path = "";
+                                  setState(() {});
+                                },
+                                child: Text('Remove image',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                    )),
+                              )
+                            : Container(),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            show_image_picker_bottom_sheet(context);
+                          },
+                          child: Text(
+                            image_path.isNotEmpty
+                                ? 'Change image'
+                                : 'Select image',
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
                 SizedBox(
                   height: 25,
@@ -314,14 +276,23 @@ class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
       error = '';
     });
 
+    Map<String, dynamic> formDataMap = {};
+    formDataMap = widget.item.toJson();
+
+    if (image_path.isNotEmpty) {
+      formDataMap['temp_file_field'] = 'image';
+      formDataMap['photo'] =
+          await dio.MultipartFile.fromFile(image_path, filename: image_path);
+    }
+
     ResponseModel resp = ResponseModel(
       await Utils.http_post(
-        'api/${EmployeeModel.end_point}',
-        widget.item.toJson(),
+        'api/${StockCategoryModel.end_point}',
+        formDataMap,
       ),
     );
 
-    await EmployeeModel.get_online_items();
+    await StockCategoryModel.get_online_items();
 
     Utils.hideLoader();
     if (resp.code != 1) {
@@ -347,5 +318,77 @@ class _EmployeeCreateScreenState extends State<EmployeeCreateScreen> {
       colorText: Colors.white,
     );
     Navigator.pop(context);
+  }
+
+  String image_path = "";
+
+  final ImagePicker picker = ImagePicker();
+
+  do_pick_image(String source) async {
+    if (source == "camera") {
+      final XFile? pic =
+          await picker.pickImage(source: ImageSource.camera, imageQuality: 100);
+      if (pic != null) {
+        image_path = pic.path;
+        setState(() {});
+      }
+    } else {
+      final XFile? pic = await picker.pickImage(
+          source: ImageSource.gallery, imageQuality: 100);
+      if (pic != null) {
+        image_path = pic.path;
+        setState(() {});
+      }
+    }
+  }
+
+  void show_image_picker_bottom_sheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              color: Colors.white),
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                'Select image from',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  do_pick_image("camera");
+                },
+                child: Text('Camera'),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  do_pick_image("gallery");
+                },
+                child: Text('Gallery'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

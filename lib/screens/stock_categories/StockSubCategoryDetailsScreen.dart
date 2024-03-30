@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui/data/my_colors.dart';
-import 'package:flutter_ui/model/StockCategoryModel.dart';
+import 'package:flutter_ui/model/StockSubCategoryModel.dart';
 import 'package:get/get.dart';
 
 import '../../model/Utils.dart';
 import '../../widget/widgets.dart';
-import 'StockCategoryCreateScreen.dart';
+import 'StockSubCategoryCreateScreen.dart';
 
-class StockCategoryDetailsScreen extends StatefulWidget {
-  StockCategoryModel item;
+class StockSubCategoryDetailsScreen extends StatefulWidget {
+  StockSubCategoryModel item;
 
-  StockCategoryDetailsScreen(this.item);
+  StockSubCategoryDetailsScreen(this.item);
 
   @override
-  State<StockCategoryDetailsScreen> createState() =>
-      _StockCategoryDetailsScreenState();
+  State<StockSubCategoryDetailsScreen> createState() =>
+      _StockSubCategoryDetailsScreenState();
 }
 
 /*
@@ -27,8 +27,8 @@ class StockCategoryDetailsScreen extends StatefulWidget {
 
 * *
 * */
-class _StockCategoryDetailsScreenState
-    extends State<StockCategoryDetailsScreen> {
+class _StockSubCategoryDetailsScreenState
+    extends State<StockSubCategoryDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +41,7 @@ class _StockCategoryDetailsScreenState
                 color: MyColors.primary,
               ),
               onPressed: () {
-                Get.to(() => StockCategoryCreateScreen(widget.item));
+                Get.to(() => StockSubCategoryCreateScreen(widget.item));
               },
             ),
           ],

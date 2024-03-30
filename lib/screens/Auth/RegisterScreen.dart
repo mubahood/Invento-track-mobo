@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ui/data/my_colors.dart';
 import 'package:flutter_ui/model/LoggedInUser.dart';
+import 'package:flutter_ui/screens/Auth/LoginScreen.dart';
 import 'package:get/get.dart';
 
 import '../../data/img.dart';
@@ -55,6 +56,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   width: 100,
                   height: 100,
+                ),
+                Container(height: 15),
+                Text(
+                  "Create Account",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Container(height: 15),
                 TextField(
@@ -171,7 +181,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       "Already have account? Login",
                       style: TextStyle(color: Colors.red[100]),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.to(() => LoginScreen());
+                    },
                   ),
                 ),
                 SizedBox(
@@ -240,10 +252,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final dio = Dio();
   String error = "";
+  LoggedInUser user = LoggedInUser();
 
   void submit() async {
     Utils.showLoader(false);
-    print("=====REGISTERING START=====");
     setState(() {
       error = '';
     });
@@ -295,7 +307,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {});
       return;
     }
-    LoggedInUser user = LoggedInUser.fromJson(resp.data['data']['user']);
+    user = LoggedInUser.fromJson(resp.data['data']['user']);
     if (user.id == 0) {
       error = 'Failed to parse user data. Try to login with your credentials.';
       Get.snackbar("Error", error, backgroundColor: Colors.red[100]);
@@ -303,8 +315,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    String saving_resp = await user.save();
+    if (saving_resp.isNotEmpty) {
+      error = saving_resp;
+      Get.snackbar("Error", saving_resp, backgroundColor: Colors.red[100]);
+      setState(() {});
+      return;
+    }
     //toast success
     Get.snackbar("Success", "Welcome ${user.first_name}",
         backgroundColor: Colors.green[100]);
+    Get.offAllNamed('/MenuRoute');
   }
 }

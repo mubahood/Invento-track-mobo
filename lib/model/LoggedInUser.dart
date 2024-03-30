@@ -1,4 +1,10 @@
+import 'package:sqflite/sqflite.dart';
+
+import 'Utils.dart';
+
 class LoggedInUser {
+  static String tableName = "logged_in_user";
+
   int id = 0;
   String username = "";
   String password = "";
@@ -17,6 +23,82 @@ class LoggedInUser {
   String dob = "";
   String status = "";
   String email = "";
+
+  static Future<LoggedInUser> getUser() async {
+    Database db = await Utils.getDb();
+    if (!db.isOpen) {
+      return LoggedInUser();
+    }
+    await initTable(db);
+    List<Map> maps = await db.query(tableName);
+    if (maps.isEmpty) {
+      return LoggedInUser();
+    }
+    return fromJson(maps[0]);
+  }
+
+  Future<String> save() async {
+    Database db = await Utils.getDb();
+    String table_results = await initTable(db);
+    if (table_results.isNotEmpty) {
+      return table_results;
+    }
+    await deleteAll();
+    try {
+      await db.insert(tableName, toJson(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+      return "";
+    } catch (e) {
+      return 'Failed to save user because ${e.toString()}.';
+    }
+    return "";
+  }
+
+  static Future<void> deleteAll() async {
+    Database db = await Utils.getDb();
+    if (!db.isOpen) {
+      return;
+    }
+    try {
+      await Utils.getDb();
+      await db.delete(tableName);
+      Utils.toast("Logged out successfully.");
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<String> initTable(Database db) async {
+    if (!db.isOpen) {
+      return 'Failed to open database.';
+    }
+    String sql = 'CREATE TABLE IF NOT EXISTS ${tableName} ('
+        'id INTEGER PRIMARY KEY'
+        ',username TEXT'
+        ',password TEXT'
+        ',name TEXT'
+        ',avatar TEXT'
+        ',remember_token TEXT'
+        ',created_at TEXT'
+        ',updated_at TEXT'
+        ',company_id TEXT'
+        ',first_name TEXT'
+        ',last_name TEXT'
+        ',phone_number TEXT'
+        ',phone_number_2 TEXT'
+        ',address TEXT'
+        ',sex TEXT'
+        ',dob TEXT'
+        ',status TEXT'
+        ',email TEXT'
+        ')';
+    try {
+      await db.execute(sql);
+      return "";
+    } catch (e) {
+      return 'Failed to create table because ${e.toString()}.';
+    }
+  }
 
   Map<String, dynamic> toJson() {
     return {

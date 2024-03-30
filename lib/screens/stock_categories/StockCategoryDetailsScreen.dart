@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui/data/my_colors.dart';
-import 'package:flutter_ui/model/StockItemModel.dart';
-import 'package:flutter_ui/screens/stock_items/StockItemCreateScreen.dart';
+import 'package:flutter_ui/model/StockCategoryModel.dart';
 import 'package:get/get.dart';
 
 import '../../model/Utils.dart';
 import '../../widget/widgets.dart';
+import 'StockCategoryCreateScreen.dart';
 
-class StockItemDetailsScreen extends StatefulWidget {
-  StockItemModel item;
+class StockCategoryDetailsScreen extends StatefulWidget {
+  StockCategoryModel item;
 
-  StockItemDetailsScreen(this.item);
+  StockCategoryDetailsScreen(this.item);
 
   @override
-  State<StockItemDetailsScreen> createState() => _StockItemDetailsScreenState();
+  State<StockCategoryDetailsScreen> createState() =>
+      _StockCategoryDetailsScreenState();
 }
 
 /*
 
 
-
-
-  String created_by_text = "";
-  String barcode = "";
-  String gallery = "";
+  String status = "";
+  String buying_price = "";
+  String selling_price = "";
+  String expected_profit = "";
 
 * *
 * */
-class _StockItemDetailsScreenState extends State<StockItemDetailsScreen> {
+class _StockCategoryDetailsScreenState
+    extends State<StockCategoryDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Stock item details #${widget.item.id}"),
+          title: Text("Stock category details #${widget.item.id}"),
           actions: [
             IconButton(
               icon: Icon(
@@ -40,7 +41,7 @@ class _StockItemDetailsScreenState extends State<StockItemDetailsScreen> {
                 color: MyColors.primary,
               ),
               onPressed: () {
-                Get.to(() => StockItemCreateScreen(widget.item));
+                Get.to(() => StockCategoryCreateScreen(widget.item));
               },
             ),
           ],
@@ -56,21 +57,21 @@ class _StockItemDetailsScreenState extends State<StockItemDetailsScreen> {
                 height: 200,
               ),
               titleDetail("Name", widget.item.name),
-              titleDetail("SKU", widget.item.sku),
-              titleDetail("Category",
-                  "${widget.item.stock_category_text}, ${widget.item.stock_sub_category_text}"),
+
               Divider(),
               SizedBox(height: 10),
-              titleDetail("Buying price",
+              titleDetail("Total Investment",
                   "UGX " + Utils.moneyFormat(widget.item.buying_price)),
-              titleDetail("Selling price",
+              titleDetail("Total Sales",
                   "UGX " + Utils.moneyFormat(widget.item.selling_price)),
-              titleDetail("Original quantity", widget.item.original_quantity),
-              titleDetail("Current quantity", widget.item.current_quantity),
+
+              titleDetail("Expected Profit",
+                  "UGX " + Utils.moneyFormat(widget.item.expected_profit)),
+
+              titleDetail("Earned Profit",
+                  "UGX " + Utils.moneyFormat(widget.item.earned_profit)),
               Divider(),
-              titleDetail("Date", Utils.formatDate(widget.item.created_at)),
-              titleDetail("Description", (widget.item.description)),
-              titleDetail("Created by", (widget.item.created_by_text)),
+              titleDetail("Details", (widget.item.description)),
             ],
           ),
         ));

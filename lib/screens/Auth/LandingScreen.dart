@@ -1,26 +1,33 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ui/data/my_colors.dart';
 import 'package:flutter_ui/model/LoggedInUser.dart';
+import 'package:flutter_ui/screens/Auth/LoginScreen.dart';
 import 'package:get/get.dart';
 
 import '../../data/img.dart';
-import '../../data/my_theme.dart';
 import '../../model/Utils.dart';
+import '../MenuRoute.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen();
+class LandingScreen extends StatefulWidget {
+  const LandingScreen();
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LandingScreen> createState() => _LandingScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LandingScreenState extends State<LandingScreen> {
   LoggedInUser newUser = LoggedInUser();
 
   String company_name = "";
   String currency = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    myInit();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,206 +48,87 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           width: double.infinity,
           height: double.infinity,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                onTap: () {
+                  myInit();
+                },
+                child: Container(
                   child: Image.asset(
                     Img.get('logo.png'),
                   ),
                   width: 100,
                   height: 100,
                 ),
-                Container(height: 15),
-                Text(
-                  "Login",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              Container(height: 15),
+              //WELCOME TO TEXT
+              Text(
+                "Welcome to",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w300,
                 ),
-                Container(height: 5),
-                TextField(
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(color: Colors.white),
-                  decoration: MyTheme.inputStyle1('Email Address'),
-                  onChanged: (value) {
-                    newUser.email = value.toString();
-                  },
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                Utils.APP_NAME,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
-                Container(height: 5),
-                TextField(
-                  keyboardType: TextInputType.visiblePassword,
-                  style: TextStyle(color: Colors.white),
-                  decoration: MyTheme.inputStyle1('Password'),
-                  onChanged: (value) {
-                    newUser.password = value.toString();
-                  },
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 2,
+              ),
+              Spacer(),
+              Divider(
+                indent: 100,
+                endIndent: 100,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              //tagline
+              Text(
+                "Inventory Management System.",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w300,
                 ),
-                Container(height: 25),
-                Container(
-                  width: double.infinity,
-                  height: 45,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyColors.primaryLight,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(5)),
-                    ),
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                    onPressed: () {
-                      validate_form();
-                    },
-                  ),
-                ),
-                error.isNotEmpty
-                    ? Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.white,
-                        ),
-                        child: Text(
-                          error,
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      )
-                    : Container(),
-                Container(height: 15),
-                Container(
-                  width: double.infinity,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                        foregroundColor: Colors.transparent),
-                    child: Text(
-                      "Already have account? Login",
-                      style: TextStyle(color: Colors.red[100]),
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-                SizedBox(
-                  height: Get.height / 6,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ));
   }
 
-  void validate_form() {
-    if (newUser.email.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Email is required.",
-        backgroundColor: Colors.red[100],
-      );
-      return;
-    }
-
-    if (newUser.password.length < 4) {
-      Get.snackbar(
-        "Error",
-        "Password must be at least 4 characters.",
-        backgroundColor: Colors.red[100],
-      );
-      return;
-    }
-    submit();
-  }
-
-  final dio = Dio();
   String error = "";
   LoggedInUser user = LoggedInUser();
 
-  void submit() async {
-    Utils.showLoader(false);
-    setState(() {
-      error = '';
-    });
-    var resp = null;
-
-    try {
-      resp = await dio.post(
-        '${Utils.API_URL}auth/login',
-        data: {
-          "email": newUser.email,
-          "password": newUser.password,
-        },
-        options: Options(headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        }),
-      );
-    } catch (e) {
-      error = e.toString();
-      resp = null;
-    }
-
-    print("=====REQUEST END=====");
-    Utils.hideLoader();
-    if (resp == null) {
-      Get.snackbar("Error", error, backgroundColor: Colors.red[100]);
+  void myInit() async {
+    user = await LoggedInUser.getUser();
+    await Future.delayed(Duration(seconds: 3));
+    if (user.id < 1) {
+      Utils.toast("Please login first.", c: Colors.red);
+      Get.offAll(() => LoginScreen());
       return;
     }
-
-    if (resp.data == null) {
-      error = "Failed to login user because ${resp.statusMessage}.";
-      Get.snackbar("Error", "Failed to register",
-          backgroundColor: Colors.red[100]);
-      return;
-    }
-
-    //if resp.data is not map
-    if (!resp.data.runtimeType.toString().toLowerCase().contains('map')) {
-      error = "Failed to register because ${resp.statusMessage}.";
-      Get.snackbar("Error", "Failed to register",
-          backgroundColor: Colors.red[100]);
-      return;
-    }
-
-    if (resp.data['code'].toString() != '1') {
-      error = resp.data['message'];
-      Get.snackbar("Error", error, backgroundColor: Colors.red[100]);
-      setState(() {});
-      return;
-    }
-
-    user = LoggedInUser.fromJson(resp.data['data']['user']);
-    if (user.id == 0) {
-      error = 'Failed to parse user data. Try to login with your credentials.';
-      Get.snackbar("Error", error, backgroundColor: Colors.red[100]);
-      setState(() {});
-      return;
-    }
-
-    String saving_resp = await user.save();
-    if (saving_resp.isNotEmpty) {
-      error = saving_resp;
-      Get.snackbar("Error", saving_resp, backgroundColor: Colors.red[100]);
-      setState(() {});
-      return;
-    }
-    //toast success
-    Get.snackbar("Success", "Welcome ${user.first_name}",
-        backgroundColor: Colors.green[100]);
-    Get.offAllNamed('/MenuRoute');
+    //welcome user
+    Utils.toast("Welcome ${user.first_name} ${user.last_name}",
+        c: Colors.green);
+    Get.offAll(() => MenuRoute());
   }
 }
