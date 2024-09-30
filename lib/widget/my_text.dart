@@ -4,62 +4,101 @@ import 'package:flutter/material.dart';
 class MyText{
 
   static TextStyle? display4(BuildContext context){
-    return Theme.of(context).textTheme.headline1;
+    return TextStyle(
+      fontSize: 112,
+      fontWeight: FontWeight.w100,
+      letterSpacing: -5,
+    );
   }
 
   static TextStyle? display3(BuildContext context){
-    return Theme.of(context).textTheme.headline2;
+    return TextStyle(
+      fontSize: 56,
+      fontWeight: FontWeight.w400,
+    );
   }
 
   static TextStyle? display2(BuildContext context){
-    return Theme.of(context).textTheme.headline3;
+    return TextStyle(
+      fontSize: 45,
+      fontWeight: FontWeight.w500,
+    );
   }
 
   static TextStyle? display1(BuildContext context){
-    return Theme.of(context).textTheme.headline4;
+    return TextStyle(
+      fontSize: 34,
+      fontWeight: FontWeight.w400,
+    );
   }
 
   static TextStyle? headline(BuildContext context){
-    return Theme.of(context).textTheme.headline5;
+    return TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w400,
+    );
   }
 
   static TextStyle? title(BuildContext context){
-    return Theme.of(context).textTheme.headline6;
+    return TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w500,
+    );
   }
 
   static TextStyle medium(BuildContext context){
-    return Theme.of(context).textTheme.subtitle1!.copyWith(
-      fontSize: 18,
+    return TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
     );
   }
 
   static TextStyle? subhead(BuildContext context){
-    return Theme.of(context).textTheme.subtitle1;
+    return TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    );
   }
 
   static TextStyle? body2(BuildContext context){
-    return Theme.of(context).textTheme.bodyText1;
+    return TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+    );
   }
 
   static TextStyle? body1(BuildContext context){
-    return Theme.of(context).textTheme.bodyText2;
+    return TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+    );
   }
 
   static TextStyle? caption(BuildContext context){
-    return Theme.of(context).textTheme.caption;
+    return TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+    );
   }
 
   static TextStyle? button(BuildContext context){
-    return Theme.of(context).textTheme.button!.copyWith(
-        letterSpacing: 1
+    return TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
     );
   }
 
   static TextStyle? subtitle(BuildContext context){
-    return Theme.of(context).textTheme.subtitle2;
+    return TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+    );
   }
 
   static TextStyle? overline(BuildContext context){
-    return Theme.of(context).textTheme.overline;
+    return TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w400,
+    );
   }
 }
