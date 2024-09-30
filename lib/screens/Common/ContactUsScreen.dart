@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ui/model/Utils.dart';
 import 'package:url_launcher/url_launcher.dart'; // for launching links
 
 class ContactUsScreen extends StatelessWidget {
@@ -16,12 +17,12 @@ class ContactUsScreen extends StatelessWidget {
           children: [
             // App Information
             Text(
-              'Invetortrack',
+              Utils.APP_NAME + ' - Contact Us',
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 5.0),
             Text(
-              'Developed by the Invetortrack Team',
+              'Developed by the ${Utils.APP_NAME} Team',
               style: TextStyle(fontSize: 14.0),
             ),
             SizedBox(height: 10.0),

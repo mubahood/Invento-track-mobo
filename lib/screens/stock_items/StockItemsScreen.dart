@@ -12,7 +12,6 @@ import '../financial_periods/FinancialPeriodsScreen.dart';
 import '../stock_categories/StockCategoriesScreen.dart';
 import '../stock_categories/StockSubCategoriesScreen.dart';
 import 'StockItemCreateScreen.dart';
-import 'StockItemDetailsScreen.dart';
 
 class StockItemsScreen extends StatefulWidget {
   Map<String, dynamic> params = {};
@@ -68,7 +67,7 @@ class _StockItemsScreenState extends State<StockItemsScreen> {
     items = await StockItemModel.get_items(where: where);
     totalQuantity = 0;
     items.forEach((element) {
-      totalQuantity += int.parse(element.current_quantity);
+      totalQuantity += Utils.int_parse(element.current_quantity);
     });
 
     if (searchKeyword.isNotEmpty) {
@@ -266,83 +265,7 @@ class _StockItemsScreenState extends State<StockItemsScreen> {
                       child: ListView.builder(
                         itemCount: items.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Image.network(
-                                Utils.getImageUrl(items[index].image),
-                                fit: BoxFit.cover,
-                                width: 50,
-                                height: 50,
-                              ),
-                            ),
-                            title: Text(items[index].name),
-                            onTap: () {
-                              if (isPicker) {
-                                Get.back(result: items[index]);
-                                return;
-                              }
-                              //StockItemDetailsScreen
-                              Get.to(
-                                  () => StockItemDetailsScreen(items[index]));
-                            },
-                            subtitle: Container(
-                              child: Column(
-                                //current quantity
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Current Quantity: ",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: Colors.grey.shade700,
-                                        ),
-                                      ),
-                                      Text(
-                                        "${Utils.moneyFormat(items[index].current_quantity)} Units",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: Colors.grey.shade700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  //selling price
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Selling Price: ",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: Colors.grey.shade700,
-                                        ),
-                                      ),
-                                      Text(
-                                        "UGX ${Utils.moneyFormat(items[index].selling_price)}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: Colors.grey.shade700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            trailing: Text(
-                              "UGX ${Utils.moneyFormat(items[index].current_quantity)}",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          );
+                          return stockItemTile(items[index], isPicker);
                         },
                       ),
                     ),

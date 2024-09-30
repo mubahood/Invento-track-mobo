@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 import '../data/my_colors.dart';
 import 'my_text.dart';
-import 'my_toast.dart';
 
 class CommonAppBar {
   static Widget getPrimaryAppbar(BuildContext context, String title) {
@@ -126,6 +125,5 @@ class CommonAppBar {
 
   static void showToastClicked(BuildContext context, String action) {
     print(action);
-    MyToast.show(action + " clicked", context);
   }
 }

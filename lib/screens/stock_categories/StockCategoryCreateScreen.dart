@@ -8,7 +8,6 @@ import 'package:flutter_ui/model/ResponseModel.dart';
 import 'package:flutter_ui/model/StockCategoryModel.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../model/Utils.dart';
 
@@ -322,23 +321,12 @@ class _StockCategoryCreateScreenState extends State<StockCategoryCreateScreen> {
 
   String image_path = "";
 
-  final ImagePicker picker = ImagePicker();
 
   do_pick_image(String source) async {
     if (source == "camera") {
-      final XFile? pic =
-          await picker.pickImage(source: ImageSource.camera, imageQuality: 100);
-      if (pic != null) {
-        image_path = pic.path;
-        setState(() {});
-      }
+
     } else {
-      final XFile? pic = await picker.pickImage(
-          source: ImageSource.gallery, imageQuality: 100);
-      if (pic != null) {
-        image_path = pic.path;
-        setState(() {});
-      }
+
     }
   }
 

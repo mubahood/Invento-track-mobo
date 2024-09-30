@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'Utils.dart';
+
 class ResponseModel {
   int code = 0;
   String message = "";
@@ -23,7 +25,7 @@ class ResponseModel {
       }
       return;
     }
-    code = int.parse(raw['code'].toString());
+    code = Utils.int_parse(raw['code'].toString());
     message = raw['message'].toString();
     data = raw['data'];
   }
@@ -33,7 +35,7 @@ class ResponseModel {
     if (m == null) {
       return;
     }
-    code = int.parse(m['code'].toString());
+    code = Utils.int_parse(m['code'].toString());
     message = m['message'].toString();
     data = m['data'];
   }

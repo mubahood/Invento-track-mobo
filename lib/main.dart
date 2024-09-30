@@ -11,12 +11,7 @@ void main() {
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
     builder: EasyLoading.init(),
-    theme: ThemeData(
-        primaryColor: MyColors.primary,
-          primaryColorDark: MyColors.primaryDark,
-          primaryColorLight: MyColors.primaryLight,
-          bottomSheetTheme:
-              BottomSheetThemeData(backgroundColor: Colors.transparent)),
+    theme: MyColors.getTheme(),
     home: LandingScreen(),
     routes: <String, WidgetBuilder>{
       '/LandingScreen': (BuildContext context) => new LandingScreen(),

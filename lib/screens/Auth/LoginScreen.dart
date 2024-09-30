@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ui/data/my_colors.dart';
 import 'package:flutter_ui/model/LoggedInUser.dart';
+import 'package:flutx/flutx.dart';
 import 'package:get/get.dart';
 
 import '../../data/img.dart';
@@ -33,6 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
         appBar: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle(
               statusBarIconBrightness: Brightness.light,
+              systemNavigationBarColor: MyColors.primary,
+              statusBarBrightness: Brightness.light,
+              systemNavigationBarDividerColor: MyColors.primary,
               statusBarColor: MyColors.primary),
           toolbarHeight: 0,
           elevation: 0,
@@ -49,6 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 SizedBox(
                   height: 20,
+                ),
+                FxText.titleLarge(Utils.APP_NAME,
+                color: Colors.white,
                 ),
                 Container(
                   child: Image.asset(

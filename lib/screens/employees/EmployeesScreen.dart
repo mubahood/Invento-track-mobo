@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import '../../widget/widgets.dart';
 
 class EmployeesScreen extends StatefulWidget {
-  const EmployeesScreen();
+  Map<String, dynamic> params = {};
+
+  EmployeesScreen(this.params);
 
   @override
   State<EmployeesScreen> createState() => _EmployeesScreenState();
@@ -21,7 +23,16 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
     myInit();
   }
 
+  bool isPicker = false;
   myInit() async {
+    if (widget.params.isNotEmpty) {
+      if (widget.params.containsKey('isPicker')) {
+        if (widget.params['isPicker'] == true) {
+          isPicker = true;
+        }
+      }
+    }
+
     items = await EmployeeModel.get_items();
     setState(() {});
   }
@@ -30,7 +41,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Employees"),
+          title: Text("Users"),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -51,8 +62,15 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                   itemCount: items.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
-                      title: Text(items[index].name),
-                      onTap: () {},
+                      title: Text(items[index].id.toString() +
+                          ". " +
+                          items[index].name),
+                      onTap: () {
+                        if (isPicker) {
+                          Get.back(result: items[index]);
+                          return;
+                        }
+                      },
                       trailing: IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () async {

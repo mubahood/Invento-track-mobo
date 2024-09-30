@@ -3,22 +3,76 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as dioPackage;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_ui/model/LoggedInUser.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:intl/intl.dart' as intl;
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
-  static urlLauncher(String url) async {
+  static String to_date_1(dynamic updatedAt) {
+    String dateText = "__/__/___";
+    if (updatedAt == null) {
+      return "__/__/____";
+    }
+    if (updatedAt.toString().length < 5) {
+      return "__/__/____";
+    }
+
+    try {
+      DateTime date = DateTime.parse(updatedAt.toString());
+
+      dateText = DateFormat("d MMM, y").format(date);
+    } catch (e) {}
+
+    return dateText;
+  }
+
+  static String to_date(dynamic updated_at) {
+    String date_text = "--:--";
+    if (updated_at == null) {
+      return "--:--";
+    }
+    if (updated_at.toString().length < 5) {
+      return "--:--";
+    }
+
+    try {
+      DateTime date = intl.DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+          .parseUTC(updated_at.toString())
+          .toLocal();
+
+      date_text = intl.DateFormat("d MMM, y - ").format(date);
+      date_text += intl.DateFormat("jm").format(
+          date); // convert local date time to string format local date time
+      return date_text;
+    } catch (e) {}
+
+    return date_text;
+  }
+
+  static log(String message) {
+    debugPrint(message, wrapWidth: 1200);
+  }
+
+  static urlLauncher(
+    String url, {
+    String title = "Open Link",
+    String message = "You are about to open the link in your browser.",
+  }) async {
+/*    Get.to(()=>  WebViewExample(url));
+    return;*/
     Get.defaultDialog(
-      title: 'Open Web Dashboard',
-      middleText: 'You are about to open the web dashboard in your browser.',
+      title: title,
+      middleText: message,
       actions: [
         ElevatedButton(
           onPressed: () async {
-            Get.back();
+            Navigator.of(Get.overlayContext!).pop();
             if (!await launchUrl(
               Uri.parse(url),
               mode: LaunchMode.externalApplication,
@@ -33,7 +87,7 @@ class Utils {
         ),
         ElevatedButton(
           onPressed: () {
-            Get.back();
+            Navigator.of(Get.overlayContext!).pop();
           },
           child: Text('Cancel'),
           style: ElevatedButton.styleFrom(
@@ -101,6 +155,10 @@ class Utils {
     );
   }
 
+  static Future<bool> is_connected() async {
+    return await Utils.isConnected();
+  }
+
   static Future<bool> isConnected() async {
     return await InternetConnectionChecker().hasConnection;
   }
@@ -123,7 +181,6 @@ class Utils {
 
     final dio = Dio();
     try {
-      print('${Utils.API_URL}${endpoint}');
       resp = await dio.get(
         '${Utils.API_URL}${endpoint}',
         queryParameters: data,
@@ -135,6 +192,9 @@ class Utils {
         }),
       );
     } on DioException catch (e) {
+      print("=====FAILED==========");
+      print(e.toString());
+      print("====================");
       return {'code': 0, 'message': e.message, 'data': null};
     }
     if (resp != null) {
@@ -170,6 +230,7 @@ class Utils {
 
     LoggedInUser user = await LoggedInUser.getUser();
     data['company_id'] = user.company_id.toString();
+    data['chaned_by_id'] = user.id.toString();
     data['logged_in_user_id'] = user.id.toString();
 
     var upload_data = dioPackage.FormData.fromMap(data); //.fromMap();
@@ -185,7 +246,11 @@ class Utils {
           'company_id': user.company_id.toString(),
         }),
       );
+      print("====success====");
+      print(resp.data);
     } on DioException catch (e) {
+      print("====error====");
+      print(e.toString());
       return {'code': 0, 'message': e.message, 'data': null};
     }
     if (resp != null) {
@@ -219,10 +284,15 @@ class Utils {
     }
   }
 
-  static final String API_URL = "https://invetotrack.ugnews24.info/api/";
+  static final String API_URL = "https://budget-pro.ugnews24.info/api/";
+  static final String BASE_URL = "https://budget-pro.ugnews24.info/";
+
+  // static final String API_URL = "http://10.0.2.2:8888/budget-pro/api/";
+  // static final String BASE_URL = "http://10.0.2.2:8888/budget-pro/";
+
   static final int APP_VERSION = 1;
   static final String DATABASE_PATH = "INVETO_TRACK_${APP_VERSION}";
-  static final String APP_NAME = "iNVETO TRACK";
+  static final String APP_NAME = "Budget Pro";
 
   static Future<Database> getDb() async {
     return await openDatabase(DATABASE_PATH, version: APP_VERSION);
@@ -248,6 +318,7 @@ class Utils {
   }
 
   static String getImageUrl(String image) {
+    print("${API_URL.replaceAll('/api', '')}/storage/$image");
     return "${API_URL.replaceAll('/api', '')}/storage/$image";
   }
 
@@ -305,5 +376,24 @@ class Utils {
       default:
         return Colors.black;
     }
+  }
+
+  static copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    Get.snackbar(
+      "Alert",
+      "Copied to clipboard",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+    return;
+  }
+
+  static getFirtLetter(String fully_paid) {
+    if (fully_paid.isEmpty) {
+      return '';
+    }
+    return fully_paid[0].toUpperCase();
   }
 }

@@ -33,6 +33,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         appBar: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle(
               statusBarIconBrightness: Brightness.light,
+              systemNavigationBarDividerColor: MyColors.primary,
+              systemNavigationBarColor: MyColors.primary,
               statusBarColor: MyColors.primary),
           toolbarHeight: 0,
           elevation: 0,
