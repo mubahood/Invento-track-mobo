@@ -6,7 +6,7 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('About Invetortrack'),
+        title: Text(Utils.APP_NAME + ' - About'),
         centerTitle: true,
       ),
       body: Padding(
@@ -29,7 +29,7 @@ class AboutScreen extends StatelessWidget {
 
               // App Description
               Text(
-                'Invetortrack is a mobile app and web dashboard system designed to empower you with efficient inventory management.',
+                '${Utils.APP_NAME} is a mobile app and web dashboard system designed to empower you with efficient budget management.',
                 style: TextStyle(fontSize: 16.0),
               ),
               SizedBox(height: 10.0),
@@ -41,17 +41,14 @@ class AboutScreen extends StatelessWidget {
               ),
               SizedBox(height: 5.0),
               Text(
-                '* Add, edit, and manage inventory items.',
+                '* Add, edit, and manage bidget items.',
                 style: TextStyle(fontSize: 14.0),
               ),
               Text(
-                '* Track stock levels and receive low stock alerts.',
+                '* Track budget progress and completion status.',
                 style: TextStyle(fontSize: 14.0),
               ),
-              Text(
-                '* Scan barcodes for quick and easy product management.',
-                style: TextStyle(fontSize: 14.0),
-              ),
+
               SizedBox(height: 10.0),
 
               // Developer Information (Optional)
@@ -61,7 +58,8 @@ class AboutScreen extends StatelessWidget {
               ),
               SizedBox(height: 5.0),
               Text(
-                'InvetoTrack Team', // Replace with your information
+                'Muhindo Mubaraka - +256783204665',
+                // Replace with your information
                 style: TextStyle(fontSize: 14.0),
               ),
               SizedBox(height: 10.0),

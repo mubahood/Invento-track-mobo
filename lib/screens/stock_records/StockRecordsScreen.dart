@@ -57,7 +57,7 @@ class _StockRecordsScreenState extends State<StockRecordsScreen> {
     items = await StockRecordModel.get_items(where: where);
     totalSales = 0;
     items.forEach((element) {
-      totalSales += int.parse(element.total_sales);
+      totalSales += Utils.int_parse(element.total_sales);
     });
     setState(() {});
   }
@@ -76,8 +76,7 @@ class _StockRecordsScreenState extends State<StockRecordsScreen> {
             IconButton(
               icon: const Icon(
                 Icons.add,
-                color: MyColors.primary,
-                size: 30,
+                size: 32,
               ),
               onPressed: () {
                 Get.to(() => StockRecordCreateScreen(StockRecordModel()));

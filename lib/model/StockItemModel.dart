@@ -33,6 +33,14 @@ class StockItemModel {
   String original_quantity = "";
   String current_quantity = "";
 
+  double get_progress() {
+    if (Utils.int_parse(this.original_quantity) < 0) {
+      return 0;
+    }
+    return Utils.int_parse(this.current_quantity) /
+        Utils.int_parse(this.original_quantity);
+  }
+
   static Future<List<StockItemModel>> get_items({String where = ""}) async {
     List<StockItemModel> items = await get_local_items(
       where: where,
@@ -65,8 +73,12 @@ class StockItemModel {
       return data;
     }
 
+    if (where.isEmpty) {
+      where = " 1 ";
+    }
+
     List<Map> maps =
-        await db.query(tableName, where: where, orderBy: ' id DESC ');
+    await db.query(tableName, where: where, orderBy: ' id DESC ');
 
     if (maps.isEmpty) {
       return data;

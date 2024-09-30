@@ -58,11 +58,14 @@ class _LandingScreenState extends State<LandingScreen> {
                   myInit();
                 },
                 child: Container(
-                  child: Image.asset(
-                    Img.get('logo.png'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      Img.get('logo.png'),
+                    ),
                   ),
-                  width: 100,
-                  height: 100,
+                  width: 200,
+                  height: 200,
                 ),
               ),
               Container(height: 15),
@@ -103,7 +106,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               //tagline
               Text(
-                "Inventory Management System.",
+                "Contributions & Budgeting System",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -120,7 +123,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
   void myInit() async {
     user = await LoggedInUser.getUser();
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 4));
     if (user.id < 1) {
       Utils.toast("Please login first.", c: Colors.red);
       Get.offAll(() => LoginScreen());

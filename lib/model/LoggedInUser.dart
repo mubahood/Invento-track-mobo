@@ -24,6 +24,7 @@ class LoggedInUser {
   String status = "";
   String email = "";
 
+
   static Future<LoggedInUser> getUser() async {
     Database db = await Utils.getDb();
     if (!db.isOpen) {
@@ -132,7 +133,7 @@ class LoggedInUser {
     }
 
     LoggedInUser obj = LoggedInUser();
-    obj.id = int.parse(data['id'].toString());
+    obj.id = Utils.int_parse(data['id'].toString());
     obj.username = data['username'].toString();
     obj.password = data['password'].toString();
     obj.name = data['name'].toString();
