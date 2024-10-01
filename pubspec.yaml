@@ -24,13 +24,15 @@ dependencies:
   path: ^1.8.3
   cached_network_image: ^3.2.2
   html: ^0.15.0
-  webview_flutter: ^3.0.4
+  webview_flutter: ^4.9.0
   flutter_easyloading: ^3.0.5
   flutter_form_builder: ^9.4.1
   form_builder_validators: ^11.0.0
   internet_connection_checker: ^1.0.0+1
   image_picker: ^1.0.7
   change_app_package_name: ^1.1.0
+  flutx: 0.2.0-rc.2
+  google_fonts: any
 
 flutter:
   uses-material-design: true
