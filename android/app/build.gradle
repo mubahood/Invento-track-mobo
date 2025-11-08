@@ -7,9 +7,9 @@ plugins {
 
 android {
     namespace = "com.example.invento_track_mobo_2"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
 
-    compileSdkVersion 34
+    compileSdkVersion 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {

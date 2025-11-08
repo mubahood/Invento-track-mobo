@@ -160,7 +160,7 @@ class Utils {
   }
 
   static Future<bool> isConnected() async {
-    return await InternetConnectionChecker().hasConnection;
+    return await InternetConnectionChecker.instance.hasConnection;
   }
 
   static Future<dynamic> http_get(
